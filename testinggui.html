@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing URL Detection Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #e1e8ff;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .url-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .result-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .status-safe {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .detail-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .features-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .features-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .features-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .features-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .features-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .risk-high {
+            background: #ffebee !important;
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .risk-low {
+            background: #e8f5e8 !important;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .risk-medium {
+            background: #fff3e0 !important;
+            color: #ef6c00;
+            font-weight: bold;
+        }
+
+        .risk-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .example-urls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .example-url {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #ddd;
+        }
+
+        .example-url:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .recommendations {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recommendations h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+
+        .recommendations ul li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .url-input {
+                min-width: 100%;
+            }
+            
+            .result-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Phishing URL Detection System</h1>
+            <p>Advanced Machine Learning-Based URL Security Analysis</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>URL Analysis</h2>
+                <p style="margin-bottom: 20px; color: #666;">Enter a complete URL (including http:// or https://) to analyze for phishing indicators</p>
+                
+                <div class="input-group">
+                    <input type="text" id="urlInput" class="url-input" placeholder="https://example.com" />
+                    <button id="analyzeBtn" class="analyze-btn">🔍 Analyze URL</button>
+                </div>
+            </div>
+
+            <div class="loading" id="loadingSection">
+                <div class="spinner"></div>
+                <p>Analyzing URL... This may take a few seconds</p>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <div class="result-header">
+                    <div class="result-status">
+                        <div class="status-icon" id="statusIcon">✅</div>
+                        <div>
+                            <h2 id="resultTitle">Analysis Results</h2>
+                            <p id="resultUrl"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-card">
+                            <div class="detail-value" id="predictionValue">-</div>
+                            <div class="detail-label">Prediction</div>
+                        </div>
+                        <div class="detail-card">
+                            <div class="detail-value" id="confidenceValue">-</div>
+                            <div class="detail-label">Confidence</div>
+                        </div>
+                        <div class="detail-card">
+                            <div class="detail-value" id="phishingProbValue">-</div>
+                            <div class="detail-label">Phishing Probability</div>
+                        </div>
+                        <div class="detail-card">
+                            <div class="detail-value" id="legitimateProbValue">-</div>
+                            <div class="detail-label">Legitimate Probability</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-section">
+                    <h2 class="section-title">📊 Detailed Feature Analysis</h2>
+                    <table class="features-table" id="featuresTable">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Value</th>
+                                <th>Interpretation</th>
+                                <th>Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="featuresTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="recommendations" id="recommendationsSection">
+                    <h3>🛡️ Security Recommendations</h3>
+                    <ul id="recommendationsList">
+                    </ul>
+                </div>
+            </div>
+
+            <div class="examples-section">
+                <h3>📝 Example URLs for Testing</h3>
+                <div class="example-urls">
+                    <div class="example-url" onclick="setExampleUrl('https://www.google.com')">
+                        https://www.google.com
+                    </div>
+                    <div class="example-url" onclick="setExampleUrl('https://www.github.com')">
+                        https://www.github.com
+                    </div>
+                    <div class="example-url" onclick="setExampleUrl('https://phishing-example@legitimate-site.com')">
+                        https://phishing-example@legitimate-site.com
+                    </div>
+                    <div class="example-url" onclick="setExampleUrl('http://very-long-suspicious-url-that-might-be-phishing-attempt.suspicious-domain.com/fake-login-page')">
+                        Long suspicious URL example
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class URLFeatureExtractor {
+            constructor() {
+                this.feature_names = [
+                    'URL_Length', 'Shortining_Service', 'having_At_Symbol',
+                    'double_slash_redirecting', 'Prefix_Suffix', 'having_Sub_Domain', 'SSLfinal_State',
+                    'Domain_registeration_length', 'Favicon', 'port', 'HTTPS_token', 'Request_URL',
+                    'URL_of_Anchor', 'Links_in_tags', 'SFH', 'Submitting_to_email', 'Abnormal_URL',
+                    'Redirect', 'on_mouseover', 'RightClick', 'popUpWindow', 'Iframe',
+                    'age_of_domain', 'web_traffic', 'Page_Rank', 'Google_Index', 'Statistical_report'
+                ];
+                
+                this.suspicious_domains = [
+                    'bit.ly', 'goo.gl', 't.co', 'ow.ly', 'is.gd',
+                    'buff.ly', 'adf.ly', 'bc.vc', 'buzurl.com', 'cli.gs', 'cur.lv'
+                ];
+                
+                this.known_legitimate_domains = [
+                    'google.com', 'github.com', 'microsoft.com', 'amazon.com', 'facebook.com',
+                    'linkedin.com', 'twitter.com', 'instagram.com', 'wikipedia.org',
+                    'stackoverflow.com', 'medium.com', 'reddit.com', 'quora.com', 'takeuforward.org',
+                    'nptel.ac.in', 'iit.ac.in', 'iisc.ac.in', 'gov.in', 'edu.in', 'nic.in', 'ac.in'
+                ];
+            }
+
+            extract_all_features(url) {
+                const features = {};
+                
+                this.feature_names.forEach(feature => {
+                    features[feature] = 0;
+                });
+
+                try {
+                    const urlObj = new URL(url);
+                    const domain = urlObj.hostname;
+                    const path = urlObj.pathname;
+                    
+                    const domain_parts = domain.split('.');
+                    const base_domain = domain_parts.length > 1 ? 
+                        domain_parts.slice(-2).join('.') : domain;
+
+                    features['URL_Length'] = url.length;
+                    
+                    features['Shortining_Service'] = this.suspicious_domains.some(shortener => 
+                        domain.includes(shortener)) ? 1 : 0;
+                    
+                    features['having_At_Symbol'] = url.includes('@') ? 1 : 0;
+                    
+                    features['double_slash_redirecting'] = url.substring(url.indexOf('://') + 3).includes('//') ? 1 : 0;
+                    
+                    features['Prefix_Suffix'] = domain.includes('-') ? 1 : 0;
+                    
+                    features['having_Sub_Domain'] = (domain_parts.length > 2 && 
+                        !this.known_legitimate_domains.includes(base_domain)) ? 1 : 0;
+                    
+                    features['SSLfinal_State'] = url.startsWith('https://') ? 1 : -1; // 1 for valid, -1 for no SSL
+                    
+                    // Mocking for frontend only (Python uses whois)
+                    features['Domain_registeration_length'] = this.known_legitimate_domains.includes(base_domain) ? 
+                        1000 : 50; // Long-term for known, shorter for others
+                    
+                    features['port'] = urlObj.port ? 1 : 0; // 1 if port is present, 0 otherwise
+                    
+                    features['HTTPS_token'] = domain.toLowerCase().includes('https') ? 1 : 0;
+                    
+                    // Simplified or default values for features requiring external lookup or dynamic content analysis
+                    features['Request_URL'] = 0; 
+                    features['URL_of_Anchor'] = 0; 
+                    features['Links_in_tags'] = 0; 
+                    features['SFH'] = 0; 
+                    features['Submitting_to_email'] = url.toLowerCase().includes('mailto:') ? 1 : 0; 
+                    features['Abnormal_URL'] = path.split('/').length > 4 ? 1 : 0; 
+                    features['Redirect'] = 0; 
+                    features['on_mouseover'] = 0; 
+                    features['RightClick'] = 0; 
+                    features['popUpWindow'] = 0; 
+                    features['Iframe'] = 0; 
+                    
+                    features['age_of_domain'] = features['Domain_registeration_length'];
+                    
+                    const isKnownDomain = this.known_legitimate_domains.includes(base_domain);
+                    features['web_traffic'] = isKnownDomain ? 1 : 0;
+                    features['Page_Rank'] = isKnownDomain ? 1 : 0;
+                    features['Google_Index'] = isKnownDomain ? 1 : 0;
+                    features['Statistical_report'] = isKnownDomain ? 1 : 0;
+                    
+                } catch (error) {
+                    console.error('Error extracting features:', error);
+                    // Return default features if extraction fails
+                    this.feature_names.forEach(feature => { features[feature] = 0; });
+                }
+                
+                return features;
+            }
+        }
+
+        class PhishingURLTester {
+            constructor() {
+                this.feature_extractor = new URLFeatureExtractor();
+            }
+
+            _validate_url(url) {
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    return false;
+                }
+                try {
+                    new URL(url);
+                    return true;
+                } catch {
+                    return false;
+                }
+            }
+
+            _get_risk_level(feature, value) {
+                const risk_levels = {
+                    'URL_Length': value > 100 ? 'HIGH' : (value > 50 ? 'MEDIUM' : 'LOW'),
+                    'Shortining_Service': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'having_At_Symbol': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'double_slash_redirecting': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Prefix_Suffix': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'having_Sub_Domain': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'SSLfinal_State': value === 1 ? 'LOW' : 'HIGH',
+                    'Domain_registeration_length': value < 30 && value > 0 ? 'HIGH' : (value > 365 ? 'LOW' : 'MEDIUM'),
+                    'Favicon': value === -1 ? 'HIGH' : 'MEDIUM',
+                    'port': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'HTTPS_token': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Request_URL': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'URL_of_Anchor': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Links_in_tags': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'SFH': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Submitting_to_email': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Abnormal_URL': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Redirect': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'on_mouseover': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'RightClick': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'popUpWindow': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'Iframe': value === 1 ? 'HIGH' : 'MEDIUM',
+                    'age_of_domain': value < 30 && value > 0 ? 'HIGH' : (value > 365 ? 'LOW' : 'MEDIUM'),
+                    'web_traffic': value === 1 ? 'LOW' : 'MEDIUM',
+                    'Page_Rank': value === 1 ? 'LOW' : 'MEDIUM',
+                    'Google_Index': value === 1 ? 'LOW' : 'MEDIUM',
+                    'Statistical_report': value === 1 ? 'LOW' : 'MEDIUM'
+                };
+
+                return risk_levels[feature] || 'MEDIUM';
+            }
+
+            _get_feature_interpretation(feature, value) {
+                const interpretations = {
+                    'URL_Length': value > 100 ? 'Very Long (>100)' : (value > 50 ? 'Medium (50-100)' : 'Short (<50)'),
+                    'Shortining_Service': value === 1 ? 'Detected' : 'Not Detected',
+                    'having_At_Symbol': value === 1 ? 'Present' : 'Absent',
+                    'double_slash_redirecting': value === 1 ? 'Detected' : 'Not Detected',
+                    'Prefix_Suffix': value === 1 ? 'Present' : 'Absent',
+                    'having_Sub_Domain': value === 1 ? 'Multiple' : 'Single',
+                    'SSLfinal_State': value === 1 ? 'Valid' : (value === 0 ? 'Invalid' : 'No SSL'),
+                    'Domain_registeration_length': value > 365 ? 'Long-term (>365 days)' : (value > 30 ? 'Medium (30-365 days)' : 'Short-term (<30 days)'),
+                    'Favicon': value === -1 ? 'Not Found' : 'Found',
+                    'port': value === 1 ? 'Non-standard' : 'Standard',
+                    'HTTPS_token': value === 1 ? 'Suspicious in domain' : 'Normal',
+                    'Request_URL': value === 1 ? 'External resources loaded' : 'Internal resources only',
+                    'URL_of_Anchor': value === 1 ? 'External anchors found' : 'Internal anchors only',
+                    'SFH': value === 1 ? 'Suspicious Form Handler' : 'Safe Form Handler',
+                    'Submitting_to_email': value === 1 ? 'Email submission found' : 'No email submission',
+                    'Abnormal_URL': value === 1 ? 'Abnormal structure' : 'Normal structure',
+                    'Redirect': value === 1 ? 'Multiple redirects' : 'No/Single redirect',
+                    'on_mouseover': value === 1 ? 'Changes on mouseover' : 'No changes',
+                    'RightClick': value === 1 ? 'Right click disabled' : 'Right click enabled',
+                    'popUpWindow': value === 1 ? 'Pop-up window found' : 'No pop-up window',
+                    'Iframe': value === 1 ? 'Iframe found' : 'No Iframe',
+                    'age_of_domain': value > 365 ? 'Old (>365 days)' : (value > 30 ? 'Medium (30-365 days)' : 'New (<30 days)'),
+                    'web_traffic': value === 1 ? 'High' : 'Low',
+                    'Page_Rank': value === 1 ? 'High' : 'Low',
+                    'Google_Index': value === 1 ? 'Indexed' : 'Not Indexed',
+                    'Statistical_report': value === 1 ? 'Clean' : 'Suspicious'
+                };
+
+                return interpretations[feature] || 'Unknown';
+            }
+
+            analyze_url(url) {
+                if (!this._validate_url(url)) {
+                    return null; // Invalid URL format
+                }
+
+                const features = this.feature_extractor.extract_all_features(url);
+                
+                const high_risk_features = [];
+                Object.entries(features).forEach(([feature, value]) => {
+                    if (this._get_risk_level(feature, value) === 'HIGH') {
+                        high_risk_features.push(feature);
+                    }
+                });
+
+                // Core logic: phishing if 2 or more high-risk features
+                const is_phishing = high_risk_features.length >= 2;
+                
+                // Simulate probabilities based on high_risk_features count
+                let phishing_prob_simulated;
+                if (high_risk_features.length >= 2) {
+                    phishing_prob_simulated = Math.min(0.95, 0.6 + high_risk_features.length * 0.1); // Higher prob for phishing
+                } else if (high_risk_features.length === 1) {
+                    phishing_prob_simulated = Math.min(0.5, 0.3 + Math.random() * 0.2); // Moderate prob for 1 high risk
+                } else {
+                    phishing_prob_simulated = Math.random() * 0.2; // Low prob for no/low high risk
+                }
+                phishing_prob_simulated = parseFloat(phishing_prob_simulated.toFixed(2));
+                const legitimate_prob_simulated = parseFloat((1 - phishing_prob_simulated).toFixed(2));
+                const confidence_simulated = Math.max(phishing_prob_simulated, legitimate_prob_simulated) * 100;
+
+                return {
+                    'url': url,
+                    'prediction': is_phishing ? 'PHISHING' : 'LEGITIMATE',
+                    'confidence': confidence_simulated,
+                    'phishing_probability': phishing_prob_simulated * 100,
+                    'legitimate_probability': legitimate_prob_simulated * 100,
+                    'features': features,
+                    'is_phishing': is_phishing,
+                    'high_risk_features': high_risk_features
+                };
+            }
+        }
+
+        // Initialize the tester
+        const tester = new PhishingURLTester();
+
+        // DOM elements
+        const urlInput = document.getElementById('urlInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const statusIcon = document.getElementById('statusIcon');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultUrl = document.getElementById('resultUrl');
+        const predictionValue = document.getElementById('predictionValue');
+        const confidenceValue = document.getElementById('confidenceValue');
+        const phishingProbValue = document.getElementById('phishingProbValue');
+        const legitimateProbValue = document.getElementById('legitimateProbValue');
+        const featuresTableBody = document.getElementById('featuresTableBody');
+        const recommendationsList = document.getElementById('recommendationsList');
+
+        // Event listeners
+        analyzeBtn.addEventListener('click', analyzeURL);
+        urlInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeURL();
+            }
+        });
+
+        function setExampleUrl(url) {
+            urlInput.value = url;
+            urlInput.focus();
+        }
+
+        async function analyzeURL() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a URL to analyze.');
+                return;
+            }
+
+            // Show loading
+            loadingSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            analyzeBtn.disabled = true;
+
+            try {
+                // Make API call to Python backend
+                const response = await fetch('http://localhost:5000/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                console.error('Analysis error:', error);
+                alert('An error occurred during analysis. Please try again.');
+            } finally {
+                loadingSection.style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        function displayResults(result) {
+            // Update status
+            const isPhishing = result.is_phishing;
+            statusIcon.textContent = isPhishing ? '🚨' : '✅';
+            statusIcon.className = `status-icon ${isPhishing ? 'status-danger' : 'status-safe'}`;
+            
+            resultTitle.textContent = `Analysis Complete - ${result.prediction}`;
+            resultUrl.textContent = result.url;
+
+            // Update result details
+            predictionValue.textContent = result.prediction;
+            predictionValue.style.color = isPhishing ? '#721c24' : '#155724';
+            
+            confidenceValue.textContent = `${result.confidence.toFixed(1)}%`;
+            phishingProbValue.textContent = `${result.phishing_probability.toFixed(1)}%`;
+            legitimateProbValue.textContent = `${result.legitimate_probability.toFixed(1)}%`;
+
+            // Update features table
+            featuresTableBody.innerHTML = '';
+            Object.entries(result.features).forEach(([feature, value]) => {
+                const row = document.createElement('tr');
+                const riskLevel = result.high_risk_features.includes(feature) ? 'HIGH' : 'MEDIUM';
+                const interpretation = getFeatureInterpretation(feature, value);
+                
+                row.innerHTML = `
+                    <td>${feature.replace(/_/g, ' ')}</td>
+                    <td>${value}</td>
+                    <td>${interpretation}</td>
+                    <td><span class="risk-badge risk-${riskLevel.toLowerCase()}">${riskLevel}</span></td>
+                `;
+                
+                if (riskLevel === 'HIGH') {
+                    row.classList.add('risk-high');
+                } else if (riskLevel === 'LOW') {
+                    row.classList.add('risk-low');
+                } else {
+                    row.classList.add('risk-medium');
+                }
+                
+                featuresTableBody.appendChild(row);
+            });
+
+            // Update recommendations
+            updateRecommendations(result);
+
+            // Show results
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getFeatureInterpretation(feature, value) {
+            const interpretations = {
+                'URL_Length': value > 100 ? 'Very Long (>100)' : (value > 50 ? 'Medium (50-100)' : 'Short (<50)'),
+                'Shortining_Service': value === 1 ? 'Detected' : 'Not Detected',
+                'having_At_Symbol': value === 1 ? 'Present' : 'Absent',
+                'double_slash_redirecting': value === 1 ? 'Detected' : 'Not Detected',
+                'Prefix_Suffix': value === 1 ? 'Present' : 'Absent',
+                'having_Sub_Domain': value === 1 ? 'Multiple' : 'Single',
+                'SSLfinal_State': value === 1 ? 'Valid' : (value === 0 ? 'Invalid' : 'No SSL'),
+                'Domain_registeration_length': value > 365 ? 'Long-term (>365 days)' : (value > 30 ? 'Medium (30-365 days)' : 'Short-term (<30 days)'),
+                'Favicon': value === -1 ? 'Not Found' : 'Found',
+                'port': value === 1 ? 'Non-standard' : 'Standard',
+                'HTTPS_token': value === 1 ? 'Suspicious in domain' : 'Normal',
+                'Request_URL': value === 1 ? 'External resources loaded' : 'Internal resources only',
+                'URL_of_Anchor': value === 1 ? 'External anchors found' : 'Internal anchors only',
+                'SFH': value === 1 ? 'Suspicious Form Handler' : 'Safe Form Handler',
+                'Submitting_to_email': value === 1 ? 'Email submission found' : 'No email submission',
+                'Abnormal_URL': value === 1 ? 'Abnormal structure' : 'Normal structure',
+                'Redirect': value === 1 ? 'Multiple redirects' : 'No/Single redirect',
+                'on_mouseover': value === 1 ? 'Changes on mouseover' : 'No changes',
+                'RightClick': value === 1 ? 'Right click disabled' : 'Right click enabled',
+                'popUpWindow': value === 1 ? 'Pop-up window found' : 'No pop-up window',
+                'Iframe': value === 1 ? 'Iframe found' : 'No Iframe',
+                'age_of_domain': value > 365 ? 'Old (>365 days)' : (value > 30 ? 'Medium (30-365 days)' : 'New (<30 days)'),
+                'web_traffic': value === 1 ? 'High' : 'Low',
+                'Page_Rank': value === 1 ? 'High' : 'Low',
+                'Google_Index': value === 1 ? 'Indexed' : 'Not Indexed',
+                'Statistical_report': value === 1 ? 'Clean' : 'Suspicious'
+            };
+
+            return interpretations[feature] || 'Unknown';
+        }
+
+        function updateRecommendations(result) {
+            const recommendations = [];
+            
+            if (result.is_phishing) {
+                recommendations.push(
+                    '❌ DO NOT enter personal information, passwords, or financial details',
+                    '❌ DO NOT download files from this website',
+                    '❌ DO NOT click on suspicious links',
+                    '✅ Verify the website URL carefully',
+                    '✅ Contact the organization directly through official channels',
+                    '✅ Report this website to anti-phishing authorities'
+                );
+            } else {
+                if (result.confidence > 80) {
+                    recommendations.push(
+                        '✅ Website appears legitimate based on analysis',
+                        '✅ Always verify SSL certificates',
+                        '✅ Check for secure payment methods',
+                        '✅ Be cautious with personal information'
+                    );
+                } else {
+                    recommendations.push(
+                        '⚠️ Exercise caution when entering sensitive information',
+                        '✅ Verify the website\'s authenticity through other means',
+                        '✅ Check user reviews and ratings',
+                        '✅ Ensure secure connection (HTTPS)'
+                    );
+                }
+            }
+
+            // General recommendations
+            recommendations.push(
+                '📋 Always verify the URL spelling and domain',
+                '📋 Look for contact information and privacy policy',
+                '📋 Use updated antivirus and browser security features'
+            );
+
+            recommendationsList.innerHTML = recommendations
+                .map(rec => `<li>${rec}</li>`)
+                .join('');
+        }
+    </script>
+</body>
+</html>
