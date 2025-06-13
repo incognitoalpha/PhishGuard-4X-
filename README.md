@@ -4,19 +4,19 @@ An advanced phishing detection system that combines **machine learning**, **Huff
 
 ---
 
-## 🚀 Features
+##  Features
 
-- ✅ Huffman-based compression & entropy features
-- ✅ Ensemble of Random Forest, XGBoost, SVM, and Logistic Regression
-- ✅ Feature selection using `SelectKBest` for improved performance
-- ✅ Web scraping & WHOIS for domain-based features
-- ✅ Flask API backend for analysis
-- ✅ Interactive HTML Dashboard UI for user-friendly access
-- ✅ Risk-based feature interpretation with recommendations
+-  Huffman-based compression & entropy features
+-  Ensemble of Random Forest, XGBoost, SVM, and Logistic Regression
+-  Feature selection using `SelectKBest` for improved performance
+-  Web scraping & WHOIS for domain-based features
+-  Flask API backend for analysis
+-  Interactive HTML Dashboard UI for user-friendly access
+-  Risk-based feature interpretation with recommendations
 
 ---
 
-## 🧠 Architecture
+## Architecture
 
 1. **Backend**:
    - `claudemodifiedensemble.py`: Core ML logic and Huffman-based phishing detection pipeline
@@ -28,7 +28,7 @@ An advanced phishing detection system that combines **machine learning**, **Huff
 
 ---
 
-## 📊 Ensemble Models Used
+##  Ensemble Models Used
 
 - `RandomForestClassifier`
 - `XGBoost` or `GradientBoostingClassifier` (fallback)
@@ -39,7 +39,7 @@ These models are combined using **VotingClassifier (soft voting)** weighted by c
 
 ---
 
-## 🏗️ Setup Instructions
+## 🏗 Setup Instructions
 
 ### 1. Install Dependencies
 
@@ -132,13 +132,13 @@ Try these:
 
 ---
 
-## 📜 License
+##  License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 ---
 
-## 🤝 Acknowledgements
+##  Acknowledgements
 
 Built using:
 
