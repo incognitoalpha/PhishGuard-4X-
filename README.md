@@ -82,6 +82,7 @@ Open `testinggui.html` in your browser. Enter a URL to analyze in real-time usin
 
 ### Feature Analysis of Phishing URL
 
+---
 
 ## API Endpoint
 
@@ -106,9 +107,13 @@ Open `testinggui.html` in your browser. Enter a URL to analyze in real-time usin
 }
 ```
 
+---
+
 ## Huffman-Based Feature Engineering
 
 The system extracts entropy, compression ratio, and complexity metrics from feature strings using Huffman coding. These are appended to traditional phishing features to boost model robustness.
+
+---
 
 ## Eample URLs for Testing
 
@@ -116,12 +121,16 @@ Try these:
 - `Legit:` https://www.google.com
 - `Phishing:` http://very-long-suspicious-url-with-symbol@malicious-site.com/fake-login
 
+---
+
 ## Future Work
 
 -`LSTM/GRU for sequence-based feature analysis`
 -`Real-time browser extension integration`
 -`Visual phishing detection using image hashing`
 -`Development of Browser Extennsion`
+
+---
 
 ## 📜 License
 
