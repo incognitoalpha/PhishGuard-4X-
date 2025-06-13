@@ -115,7 +115,7 @@ The system extracts entropy, compression ratio, and complexity metrics from feat
 
 ---
 
-## Eample URLs for Testing
+## Example URLs for Testing
 
 Try these:
 - `Legit:` https://www.google.com
@@ -125,10 +125,10 @@ Try these:
 
 ## Future Work
 
--`LSTM/GRU for sequence-based feature analysis`
--`Real-time browser extension integration`
--`Visual phishing detection using image hashing`
--`Development of Browser Extennsion`
+- `LSTM/GRU for sequence-based feature analysis`
+- `Real-time browser extension integration`
+- `Visual phishing detection using image hashing`
+- `Development of Browser Extennsion`
 
 ---
 
