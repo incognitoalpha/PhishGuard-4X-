@@ -1,4 +1,4 @@
-# 🔐 Phishing URL Detection System
+#  Phishing URL Detection System
 
 An advanced phishing detection system that combines **machine learning**, **Huffman encoding features**, and **real-time web scraping** to detect potentially malicious URLs with high accuracy. This project includes a 4-model ensemble classifier and an interactive frontend dashboard for URL analysis.
 
@@ -39,7 +39,7 @@ These models are combined using **VotingClassifier (soft voting)** weighted by c
 
 ---
 
-## 🏗 Setup Instructions
+##  Setup Instructions
 
 ### 1. Install Dependencies
 
