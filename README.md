@@ -66,10 +66,10 @@ The Flask server will start at http://localhost:5000.
 
 Open `testinggui.html` in your browser. Enter a URL to analyze in real-time using the backend API.
 
-![Legitimate URL]([images/gui-screenshot.png](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/legitimate.png))
-![Feature Analysis of Legitimate URL]([images/gui-screenshot.png](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/Legitimate%20feature.png))
-![Phishing URL]([images/gui-screenshot.png](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/phishing%20web.png))
-![Feature Analysis of Phishing URL]([images/gui-screenshot.png](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/phishing%20feature.png))
+![Legitimate URL](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/legitimate.png)
+![Feature Analysis of Legitimate URL](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/Legitimate%20feature.png)
+![Phishing URL](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/phishing%20web.png)
+![Feature Analysis of Phishing URL](https://github.com/incognitoalpha/PhishGuard-4X-/blob/main/phishing%20feature.png)
 
 
 
