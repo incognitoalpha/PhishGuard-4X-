@@ -7,13 +7,13 @@ import os
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from claudemodifiedensemble import (
+from Model import (
     OptimizedPhishingDetector,
     PhishingFeatureExtractor,
     HuffmanEncoder,
     HuffmanNode
 )
-from claudemodifiedensembletesting import PhishingURLTester
+from testing import PhishingURLTester
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
