@@ -18,7 +18,7 @@ try:
     XGBOOST_AVAILABLE = True
 except ImportError:
     XGBOOST_AVAILABLE = False
-    print("Warning: XGBoost not available. Using GradientBoostingClassifier as substitute.")
+    print("Warning: XGBoost not available. Using the GradientBoostingClassifier as substitute.")
 
 class HuffmanNode:
     def __init__(self, char: str, freq: int, left=None, right=None):
